@@ -10,10 +10,6 @@ class Graph():
 		# Create a private dictionary for mapping IDs to names
 		self.__id_mapping__ = {}
 		
-	def print_(self):
-		print(self.__graph__)
-		
-		
 	def add_node(self, name, id):
 		""" This method adds a node to the graph and notes the ID of the node
 		    for mapping IDs to names. Edges are not added at this point """
@@ -48,6 +44,13 @@ class Graph():
 				self.__graph__[name].append(manager_name)
 			if name not in self.__graph__[manager_name]:
 				self.__graph__[manager_name].append(name)
+				
+	def node_id(self, name):
+		""" This method returns the ID of any given node """
+		if name in self.__name_mapping__:
+			return self.__name_mapping__[name]
+		else:
+			return None
 		
 	def find_path(self, start, end, path=[]):
 		""" This method finds the path between two nodes in the graph """

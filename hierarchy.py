@@ -19,7 +19,7 @@ def main(args):
 	
 	graph = build_graph(filename)
 	path = graph.find_path(start, end)
-	print(path)
+	print(path_to_string(graph, path))
 	
 def build_graph(filename):
 	""" This method takes the text file and builds the graph """
@@ -64,7 +64,9 @@ def build_graph(filename):
 def path_to_string(graph, path):
 	""" This method takes the graph and a path between two nodes, and formats
 	    the path into the required output format """
-	
+	for node in path:
+		id = graph.node_id(node)
+		print("%s (%s)" % (node, id))
 	
 if __name__ == "__main__":
 	main(sys.argv)
