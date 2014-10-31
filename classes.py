@@ -49,9 +49,10 @@ class Graph():
 			if name not in self.__graph__[manager_name]:
 				self.__graph__[manager_name].append(name)
 		
-	def find_path(self, start, end, path):
+	def find_path(self, start, end, path=[]):
 		""" This method finds the path between two nodes in the graph """
 		path = path + [start]
+		
 		if start == end:
 			# If the start and end nodes specified are the same, no need to
 			# find a path
@@ -67,7 +68,7 @@ class Graph():
 			
 		for node in self.__graph__[start]:
 			if node not in path:
-				newpath = find_path(node, end, path)
+				newpath = self.find_path(node, end, path)
 				if newpath:
 					#If we have found a path, return it
 					return newpath
