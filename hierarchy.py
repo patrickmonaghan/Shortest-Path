@@ -81,5 +81,6 @@ def path_to_string(graph, path):
 		path_string = "%s %s %s (%s)" % (path_string, direction, node, id)
 		
 	return path_string
+	
 if __name__ == "__main__":
 	main(sys.argv)
