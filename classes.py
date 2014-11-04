@@ -1,3 +1,10 @@
+""" This program is designed as a  to the BT coding excercise
+for Organisation Chart Traversal. 
+
+It is developed to run under Python 2.7"""
+
+__author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
+
 class Graph():
 	
 	def __init__(self):

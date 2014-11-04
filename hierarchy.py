@@ -1,5 +1,11 @@
 #!/usr/bin/python
-# Developed using Python 2.7
+
+""" This program is designed as a solution to the BT coding excercise
+for Organisation Chart Traversal. 
+
+It is developed to run under Python 2.7"""
+
+__author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
 
 import sys
 import os.path
@@ -19,7 +25,8 @@ def main(args):
 	
 	graph = build_graph(filename)
 	path = graph.find_path(start, end)
-	print(path_to_string(graph, path))
+	path_format = path_to_string(graph, path)
+	print(path_format)
 	
 def build_graph(filename):
 	""" This method takes the text file and builds the graph """
@@ -64,7 +71,7 @@ def build_graph(filename):
 def path_to_string(graph, path):
 	""" This method takes the graph and a path between two nodes, and formats
 	    the path into the required output format """
-	direction = "-->"
+	direction = "->"
 	last_manager = None
 	
 	# Print the first element to start the list
@@ -76,7 +83,7 @@ def path_to_string(graph, path):
 	for node in path[1:]:
 		id = graph.node_id(node)
 		if id != last_manager:
-			direction = "<--"
+			direction = "<-"
 		last_manager = graph.get_manager(id)
 		path_string = "%s %s %s (%s)" % (path_string, direction, node, id)
 		
