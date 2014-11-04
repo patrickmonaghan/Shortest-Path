@@ -24,15 +24,22 @@ def main(args):
 		sys.exit(USAGE)
 	
 	graph = build_graph(filename)
+	if not graph:
+		# Graph does not exist, so file is invalid
+		sys.exit("%s is not a valid file." % filename)
+		
 	path = graph.find_path(start, end)
-	path_format = path_to_string(graph, path)
-	print(path_format)
-	
+	if path:
+		path_format = path_to_string(graph, path)
+		print(path_format)
+	else:
+		sys.exit("No path was found between %s and %s" % (start, end))
+		
 def build_graph(filename):
 	""" This method takes the text file and builds the graph """
 	if not os.path.isfile(filename):
-		# Check the file exists
-		sys.exit("%s is not a valid file." % filename)
+		# If the file does not exist, return nothing
+		return None
 	
 	# Create the graph file
 	graph = Graph()
@@ -71,23 +78,29 @@ def build_graph(filename):
 def path_to_string(graph, path):
 	""" This method takes the graph and a path between two nodes, and formats
 	    the path into the required output format """
-	direction = "->"
-	last_manager = None
+
+	try:
+		direction = "->"
+		last_manager = None
 	
-	# Print the first element to start the list
-	start = path[0]
-	id = graph.node_id(start)
-	last_manager = graph.get_manager(id)
-	path_string = "%s (%s)" % (start, id)
-	
-	for node in path[1:]:
-		id = graph.node_id(node)
-		if id != last_manager:
-			direction = "<-"
+		# Print the first element to start the list
+		start = path[0]
+		id = graph.node_id(start)
 		last_manager = graph.get_manager(id)
-		path_string = "%s %s %s (%s)" % (path_string, direction, node, id)
+		path_string = "%s (%s)" % (start, id)
+	
+		for node in path[1:]:
+			id = graph.node_id(node)
+			if id != last_manager:
+				direction = "<-"
+			last_manager = graph.get_manager(id)
+			path_string = "%s %s %s (%s)" % (path_string, direction, node, id)
 		
-	return path_string
+		return path_string
+	except:
+		# We already know our graph build and find functions are working
+		# So an error here indicates no path
+		return None
 	
 if __name__ == "__main__":
 	main(sys.argv)

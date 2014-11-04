@@ -4,6 +4,7 @@ for Organisation Chart Traversal.
 It is developed to run under Python 2.7"""
 
 __author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
+import re
 
 class Graph():
 	
@@ -77,23 +78,37 @@ class Graph():
 		
 	def find_path(self, start, end, path=[]):
 		""" This method finds the path between two nodes in the graph """
+		
+		# Trim the trailing and leading spaces from employee names
+		start = start.lstrip().rstrip()
+		end = end.lstrip().rstrip()
+		
+		# Remove multiple spaces
+		start = re.sub(' +', ' ',start)
+		end = re.sub(' +', ' ',end)
+		
 		path = path + [start]
 		
-		if start == end:
-			# If the start and end nodes specified are the same, no need to
-			# find a path
+		# Map the nodes in the current path and graph to uppercase
+		# That we are not case sensitive when checking for names
+		graph_case = map(str.upper, self.__graph__)
+		path_case = map(str.upper, path)
+		
+		if start.upper() == end.upper():
+			# If the start and end nodes specified are the same, we've found our path
 			return path
 		
-		if start not in self.__graph__:
+		if start.upper() not in graph_case:
 			# The specified start node doesn't exist
 			return None
 		
-		if end not in self.__graph__:
+		if end.upper() not in graph_case:
 			# The specified end node doesn't exist
 			return None
 			
 		for node in self.__graph__[start]:
-			if node not in path:
+			# Convert all names to uppercase for comparison
+			if node.upper() not in path_case:
 				newpath = self.find_path(node, end, path)
 				if newpath:
 					#If we have found a path, return it
