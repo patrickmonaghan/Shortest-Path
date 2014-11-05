@@ -9,6 +9,7 @@ __author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
 
 import hierarchy
 import unittest
+from custom_exceptions import EdgesError, InvalidEmployeeID, NonExistentFile
 
 class SolutionCheck(unittest.TestCase):
 	filename = "superheroes.txt"
@@ -38,7 +39,7 @@ class SanityCheck(unittest.TestCase):
 	
 	def testCaseCheck(self):
 		"""Check that the solution is not case sensitive"""
-		start = "Batman"
+		start = "BatMAN"
 		end = "catwoman"
 		expected = "Batman (16) -> Black Widow (6) <- Catwoman (17)"
 		
@@ -66,21 +67,21 @@ class SanityCheck(unittest.TestCase):
 		path = graph.find_path(start, end)
 		self.assertEquals(expected, path)
 		
+	def testMultipleNames(self):
+		"""Check that duplicate names but unique IDs work """
+		start = "Catwoman"
+		end = "Catwoman"
+		expected = "Catwoman (17) -> Black Widow (6) <- Catwoman (18)"
+		
+		filename = "testing/datasets/duplicate_name.txt"
+		graph = hierarchy.build_graph(filename)
+		path = graph.find_path(start, end)
+		self.assertEquals(expected, path)
+		
 class StabilityCheck(unittest.TestCase):
 	
 	def testNoPathFound(self):
 		"""Check that we gracefully handle when no path is present"""
-		filename = "superheroes.txt"
-		start = "Black Widow"
-		end = "Patrick Monaghan"
-		
-		graph = hierarchy.build_graph(filename)
-		path = graph.find_path(start, end)
-		self.assertEquals(None, path)
-		
-	def testNoPathFormatted(self):
-		"""Check that we gracefully handle when no path exists but we try to
-		format"""
 		filename = "superheroes.txt"
 		start = "Black Widow"
 		end = "Patrick Monaghan"
@@ -96,8 +97,7 @@ class StabilityCheck(unittest.TestCase):
 		start = "Black Widow"
 		end = "Batman"
 		
-		graph = hierarchy.build_graph(filename)
-		self.assertEquals(None, graph)
+		self.assertRaises(NonExistentFile, hierarchy.build_graph, filename)
 		
 	def testExtendedGraph(self):
 		"""Try with a bigger dataset"""
@@ -122,6 +122,23 @@ class StabilityCheck(unittest.TestCase):
 		graph = hierarchy.build_graph(filename)
 		path = graph.find_path(start, end)
 		self.assertEquals(expected, path)
+		
+	def testInvalidManagerFile(self):
+		"""Check that providing a file with invalid manager ID is handled properly"""
+		filename = filename = "testing/datasets/invalid_manager.txt"
+		start = "Catwoman"
+		end = "Gonzo the Great"
+		
+		graph = hierarchy.build_graph(filename)
+		self.assertRaises(EdgesError, graph.find_path, start, end)
+		
+	def testInvalidEmployeeID(self):
+		"""Check that providing a file with an invalid employee ID is handled properly"""
+		filename = filename = "testing/datasets/invalid_employee_id.txt"
+		start = "Catwoman"
+		end = "Gonzo the Great"
+		
+		self.assertRaises(InvalidEmployeeID, hierarchy.build_graph, filename)
 		
 if __name__ == "__main__":
     unittest.main()

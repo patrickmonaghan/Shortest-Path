@@ -1,17 +1,24 @@
 """ This program is designed as a  to the BT coding excercise
 for Organisation Chart Traversal. 
 
+This file provides the classes
+
 It is developed to run under Python 2.7"""
 
 __author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
 import re
+from custom_exceptions import EdgesError, InvalidEmployeeID, NonExistentFile
 
 class Employee():
 	
 	""" This class represents an employee in the organisation chart """
 	def __init__(self, name="", id=-1, manager_id=-1):
 		self.name = name
-		self.id = int(id)
+		try:
+			self.id = int(id)
+		except ValueError as e:
+			errmsg = "Invalid Employee ID for employee %s (%s)" % (name, id)
+			raise InvalidEmployeeID(errmsg)
 		if manager_id:
 			self.manager_id = int(manager_id)
 		else:
@@ -95,32 +102,35 @@ class OrganisationChart():
 	def get_nodes_and_edges(self):
 		""" This method returns a dictionary where the employee ID is the key
 		and the edges are a list of values """
+		try:
+			nodes = self.get_employees()
 		
-		nodes = self.get_employees()
-		
-		# Create the initial dictionary with no values
-		edges = {}
-		for node in nodes:
-			id = node.get_id()
-			edges[id] = []
+			# Create the initial dictionary with no values
+			edges = {}
+			for node in nodes:
+				id = node.get_id()
+				edges[id] = []
 			
-		# Now that we have an initial dictionary, we populate it with the edges
-		# of the graph. To ensure we have proper data flow, populate the 
-		# managers list of edges as well as the current employee
-		for node in nodes:
-			id = node.get_id()
-			mgr_id = node.get_managerid()
+			# Now that we have an initial dictionary, we populate it with the 
+			# edges of the graph. To ensure we have proper data flow, populate
+			# the managers list of edges as well as the current employee
+			for node in nodes:
+				id = node.get_id()
+				mgr_id = node.get_managerid()
 			
-			# Check that this employee has a manager
-			if mgr_id:
-				if mgr_id not in edges[id]:
-					edges[id].append(mgr_id)
+				# Check that this employee has a manager
+				if mgr_id:
+					if mgr_id not in edges[id]:
+						edges[id].append(mgr_id)
 			
-				if id not in edges[mgr_id]:
-					edges[mgr_id].append(id)
-				
-		return edges
-	
+					if id not in edges[mgr_id]:
+						edges[mgr_id].append(id)	
+			return edges
+		except:
+			# Any errors that occur indicate problems with the edges,
+			# further indicating file format issues
+			raise EdgesError("Problem creating edges")
+			
 	def format_name(self, name):
 		""" This method takes a name and formats it so we can search with it.
 		Leading and trailing spaces are removed, multiple spaces are removed
@@ -149,14 +159,13 @@ class OrganisationChart():
 			empname = emp.get_name()
 			empname = self.format_name(empname)
 			
-			if empname == start:
+			if empname == start and not start_id:
 				# We have found our start employee ID
 				start_id = emp.get_id()
-			elif empname == end:
+			elif empname == end and not end_id:
 				# We do if/else to ensure we get different employees even if
 				# they have the same name
 				end_id = emp.get_id()
-				
 		
 		if start_id and end_id:
 			path = self.find_path_by_ids(start_id, end_id)

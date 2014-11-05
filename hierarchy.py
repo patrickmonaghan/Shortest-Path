@@ -10,6 +10,7 @@ __author__ = "Patrick Monaghan (patrick@patrickmonaghan.co.uk)"
 import sys
 import os.path
 from classes import OrganisationChart, Employee
+from custom_exceptions import EdgesError, InvalidEmployeeID, NonExistentFile
 
 USAGE = "Usage: python2.7 hierarchy.py [File] [Start] [End]"
 			 
@@ -23,12 +24,18 @@ def main(args):
 	except Exception:
 		sys.exit(USAGE)
 	
-	graph = build_graph(filename)
-	if not graph:
-		# Graph does not exist, so file is invalid
+	
+	try:
+		graph = build_graph(filename)
+	except NonExistentFile as e:
 		sys.exit("%s is not a valid file." % filename)
+	except InvalidEmployeeID as e:
+		sys.exit(e)
+	try:
+		path = graph.find_path(start, end)
+	except EdgesError as e:
+		sys.exit("A problem occured when creating the edges in the chart. Please check your input file is valid")
 		
-	path = graph.find_path(start, end)
 	if path:
 		print(path)
 	else:
@@ -38,7 +45,7 @@ def build_graph(filename):
 	""" This method takes the text file and builds the graph """
 	if not os.path.isfile(filename):
 		# If the file does not exist, return nothing
-		return None
+		raise NonExistentFile("%s does not exist." % filename)
 	
 	# Create the graph file
 	orgchart = OrganisationChart()
