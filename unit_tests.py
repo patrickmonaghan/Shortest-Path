@@ -47,7 +47,7 @@ class SanityCheck(unittest.TestCase):
 		path = graph.find_path(start, end)
 		self.assertEquals(expected, path)
 		
-	def testTrailingLeaderSpace(self):
+	def testTrailingLeadSpace(self):
 		"""Check that trailing and leading space is ignored"""
 		start = "     Black Widow"
 		end = "Dangermouse    "
