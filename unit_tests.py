@@ -21,8 +21,7 @@ class SolutionCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(self.filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
 		
 	def testSolutionWorks(self):
 		"""Check that another example works"""
@@ -32,8 +31,7 @@ class SolutionCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(self.filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
 
 class SanityCheck(unittest.TestCase):
 	filename = "superheroes.txt"
@@ -46,8 +44,7 @@ class SanityCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(self.filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
 		
 	def testTrailingLeaderSpace(self):
 		"""Check that trailing and leading space is ignored"""
@@ -57,8 +54,7 @@ class SanityCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(self.filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
 		
 	def testMultipleSpaces(self):
 		"""Check that multiple spaces are ignored"""
@@ -68,8 +64,7 @@ class SanityCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(self.filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
 		
 class StabilityCheck(unittest.TestCase):
 	
@@ -82,6 +77,7 @@ class StabilityCheck(unittest.TestCase):
 		graph = hierarchy.build_graph(filename)
 		path = graph.find_path(start, end)
 		self.assertEquals(None, path)
+		
 	def testNoPathFormatted(self):
 		"""Check that we gracefully handle when no path exists but we try to
 		format"""
@@ -91,8 +87,7 @@ class StabilityCheck(unittest.TestCase):
 		
 		graph = hierarchy.build_graph(filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(None, path_format)
+		self.assertEquals(None, path)
 		
 	def testNoFile(self):
 		"""Check that if we give the program a non existent file, it 
@@ -104,7 +99,7 @@ class StabilityCheck(unittest.TestCase):
 		graph = hierarchy.build_graph(filename)
 		self.assertEquals(None, graph)
 		
-	def textExtendedGraph(self):
+	def testExtendedGraph(self):
 		"""Try with a bigger dataset"""
 		filename = "testing/datasets/extended_dataset.txt"
 		start = "Catwoman"
@@ -112,10 +107,21 @@ class StabilityCheck(unittest.TestCase):
 		
 		expected = """Catwoman (17) -> Black Widow (6) -> Gonzo the Great (2) -> Dangermouse (1) <- Captain America (19) <- Wolverine (21) <- Hulk (31) <- SpiderMan (25) <- Superman (35)"""
 		
-		graph = hierarchy.build_graph(self.filename)
+		graph = hierarchy.build_graph(filename)
 		path = graph.find_path(start, end)
-		path_format = hierarchy.path_to_string(graph, path)
-		self.assertEquals(expected, path_format)
+		self.assertEquals(expected, path)
+		
+	def testInverseSearch(self):
+		"""Check that searching the organisation chart in reverse works: for
+		example, searching from right to left"""
+		filename = "superheroes.txt"
+		start = "Catwoman"
+		end = "Batman"
+		
+		expected = "Catwoman (17) -> Black Widow (6) <- Batman (16)"
+		graph = hierarchy.build_graph(filename)
+		path = graph.find_path(start, end)
+		self.assertEquals(expected, path)
 		
 if __name__ == "__main__":
     unittest.main()
