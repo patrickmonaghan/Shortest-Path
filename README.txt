@@ -10,7 +10,9 @@ file, execute 'python2.7 hierarchy.py superheroes.txt "Batman" "Super Ted"'
 Testing
 ===========================
 
-There are 12 unit tests. These are as follows:
+There are 12 unit tests. To execute the unit tests, run 'python unit_tests.py'
+
+The tests are as follows:
  * SolutionCheck.testSolutionExampleWorks: Check that the example given in the PDF works
  * SolutionCheck.testSolutionWorks: Checks that another example works
  
